@@ -34,6 +34,7 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 	private final ContactosControlador contactos;
 	private final IdiomaControlador idiomas;
 	private ReporteEstadisticas reporte;
+	private VerificacionControlador verificacion;
 	private String categoria = "";
 	private boolean favorito = false;
 
@@ -213,10 +214,8 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 		String email = delegado.txt_email.getText();
 
 		if (origen == delegado.btn_add) {
-			if (contactos.agregar(nombres, telefono, email, categoria, favorito)) {
-				refrescar();
-				limpiarCampos();
-			}
+			VerificacionControlador controlador = new VerificacionControlador(delegado, contactos.getContactos(), contactos);
+			controlador.start();
 		} else if (origen == delegado.btn_modificar || origen == delegado.btn_eliminar) {
 			int fila = delegado.lst_contactos.getSelectedRow();
 			if (fila == -1) {
