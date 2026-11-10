@@ -89,7 +89,10 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 			public void insertUpdate(DocumentEvent e) { filtrar(); }
 			public void removeUpdate(DocumentEvent e) { filtrar(); }
 			public void changedUpdate(DocumentEvent e) { filtrar(); }
-			private void filtrar() { tabla.filtrar(delegado.txt_buscar.getText()); }
+			private void filtrar() {
+				BusquedaControlador busquedaControlador = new BusquedaControlador(delegado, contactos.getContactos(), tabla);
+				busquedaControlador.start();
+			}
 		};
 		delegado.txt_buscar.getDocument().addDocumentListener(filtro);
 	}

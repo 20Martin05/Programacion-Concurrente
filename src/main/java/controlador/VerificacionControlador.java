@@ -6,7 +6,6 @@ import vista.ventana;
 import javax.swing.*;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
 
 public class VerificacionControlador extends Thread{
     private static final Logger LOGGER = Logger.getLogger(VerificacionControlador.class.getName());
