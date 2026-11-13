@@ -94,12 +94,4 @@ public class TablaContactos {
             }
         });
     }
-
-    // Filtra por nombre sin distinguir mayúsculas; texto vacío muestra todos.
-    public void filtrar(String texto) {
-        if (sorter == null) return;
-        String limpio = texto.trim();
-        sorter.setRowFilter(limpio.isEmpty() ? null
-                : RowFilter.regexFilter("(?i)" + java.util.regex.Pattern.quote(limpio)));
-    }
 }
