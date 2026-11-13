@@ -9,6 +9,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,8 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 	private final IdiomaControlador idiomas;
 	private ReporteEstadisticas reporte;
 	private VerificacionControlador verificacion;
+	private BusquedaControlador busqueda;
+	private ExportacionControlador  exportacion;
 	private String categoria = "";
 	private boolean favorito = false;
 
@@ -90,8 +93,8 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 			public void removeUpdate(DocumentEvent e) { filtrar(); }
 			public void changedUpdate(DocumentEvent e) { filtrar(); }
 			private void filtrar() {
-				BusquedaControlador busquedaControlador = new BusquedaControlador(delegado, contactos.getContactos(), tabla);
-				busquedaControlador.start();
+				BusquedaControlador busqueda = new BusquedaControlador(delegado, contactos.getContactos(), tabla, delegado.txt_buscar.getText());
+				busqueda.execute();
 			}
 		};
 		delegado.txt_buscar.getDocument().addDocumentListener(filtro);
@@ -217,8 +220,8 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 		String email = delegado.txt_email.getText();
 
 		if (origen == delegado.btn_add) {
-			VerificacionControlador controlador = new VerificacionControlador(delegado, contactos.getContactos(), contactos);
-			controlador.start();
+			VerificacionControlador verificacion = new VerificacionControlador(delegado, contactos.getContactos(), contactos, () -> { refrescar(); limpiarCampos(); });
+			verificacion.start();
 		} else if (origen == delegado.btn_modificar || origen == delegado.btn_eliminar) {
 			int fila = delegado.lst_contactos.getSelectedRow();
 			if (fila == -1) {
@@ -252,26 +255,18 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 		chooser.setSelectedFile(new java.io.File("tabla_contactos.csv"));
 		if (chooser.showSaveDialog(delegado) != JFileChooser.APPROVE_OPTION) return;
 
-		java.io.File destino = chooser.getSelectedFile();
+		File destino = chooser.getSelectedFile();
 		if (!destino.getName().toLowerCase().endsWith(".csv")) {
-			destino = new java.io.File(destino.getAbsolutePath() + ".csv");
+			destino = new File(destino.getAbsolutePath() + ".csv");
 		}
-		try {
-			new PersonaDAO(new Persona()).exportarCSV(destino, contactos.getContactos());
-			JOptionPane.showMessageDialog(delegado,
-					t("msg.exportado.exito", "Exportado exitosamente en:\n") + destino.getAbsolutePath());
-		} catch (IOException ex) {
-			JOptionPane.showMessageDialog(delegado,
-					t("msg.error.exportar", "Error al exportar archivo: ") + ex.getMessage(),
-					t("dialog.error.titulo", "Error"), JOptionPane.ERROR_MESSAGE);
-		}
-	}
+		new ExportacionControlador(delegado, contactos.getContactos(), destino).execute();
+    }
 
 	private void exportarReporte() {
 		String contenido = reporte.generar(contactos.getContactos());
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle(t("msg.reporte.exportar.titulo", "Exportar Reporte"));
-		chooser.setSelectedFile(new java.io.File("reporte_estadisticas.txt"));
+		chooser.setSelectedFile(new File("reporte_estadisticas.txt"));
 		if (chooser.showSaveDialog(delegado) != JFileChooser.APPROVE_OPTION) return;
 
 		try {
@@ -314,7 +309,7 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 		}
 	}
 
-	// Se ejecuta al cambiar de idioma: re-traduce categorías, tabla, reporte y barra.
+	// Se ejecuta al cambiar de idioma: retraduce categorías, tabla, reporte y barra.
 	private void cambiarIdioma(Locale nuevo) {
 		delegado.actualizarIdioma(nuevo);
 		inicializarCategorias();
