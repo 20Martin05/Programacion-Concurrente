@@ -46,7 +46,7 @@ public class Persona {
 	public boolean isFavorito() { return favorito; }
 	public void setFavorito(boolean favorito) { this.favorito = favorito; }
 
-	public String datosContacto() {
+	public synchronized String datosContacto() {
 		return String.format(Locale.ROOT, "%d;%s;%s;%s;%s;%s", id, nombre, telefono, email, categoria, favorito);
 	}
 }
