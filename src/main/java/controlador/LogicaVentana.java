@@ -264,8 +264,10 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 			exportarLista();
 		} else if (origen == delegado.btn_actualizar_estadisticas) {
 			mostrarReporte();
+			new NotificacionControlador(delegado, "msg.notificacion.estadisticas.actualizadas", t("msg.notificacion.estadisticas.actualizadas", "Estadísticas actualizadas con éxito")).start();
 		} else if (origen == delegado.btn_limpiar_estadisticas) {
 			delegado.tbl_estadisticas.setText("");
+			new NotificacionControlador(delegado, "msg.notificacion.estadisticas.limpiadas", t("msg.notificacion.estadisticas.limpiadas", "Estadísticas limpiadas con éxito")).start();
 		} else if (origen == delegado.btn_exportar_reporte) {
 			exportarReporte();
 		}
@@ -294,6 +296,10 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 		try {
 			java.nio.file.Files.writeString(chooser.getSelectedFile().toPath(), contenido,
 					java.nio.charset.StandardCharsets.UTF_8);
+
+			// Notificación flotante en el panel al exportar reporte con éxito
+			new NotificacionControlador(delegado, "msg.notificacion.exportado", "Reporte exportado con éxito").start();
+
 			JOptionPane.showMessageDialog(delegado, t("msg.reporte.exportado", "Reporte exportado con éxito."),
 					t("dialog.exito.titulo", "Éxito"), JOptionPane.INFORMATION_MESSAGE);
 		} catch (IOException ex) {

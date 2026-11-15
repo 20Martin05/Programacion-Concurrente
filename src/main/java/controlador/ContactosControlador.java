@@ -73,7 +73,6 @@ public class ContactosControlador {
             new PersonaDAO(persona).escribirArchivo();
             contactos.add(persona);
             new NotificacionControlador(this.delegado, "msg.notificacion.guardado", "Contacto guardado con éxito").start();
-            info(t("msg.contacto.registrado", "Contacto Registrado!!!"));
             return true;
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Fallo al escribir en disco el nuevo contacto", ex);
@@ -90,7 +89,6 @@ public class ContactosControlador {
             contactos.set(indice, new Persona(id, nombres, telefono, email, categoria, favorito));
             new PersonaDAO(new Persona()).actualizarContactos(contactos);
             new NotificacionControlador(this.delegado, "msg.notificacion.modificado", "Contacto modificado con éxito").start();
-            info(t("msg.modificado.exito", "Modificado con Éxito"));
             return true;
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Fallo al actualizar el contacto en índice: " + indice, ex);
@@ -105,12 +103,16 @@ public class ContactosControlador {
             contactos.remove(indice);
             new PersonaDAO(new Persona()).actualizarContactos(contactos);
             new NotificacionControlador(this.delegado, "msg.notificacion.eliminado", "Contacto eliminado con éxito").start();
-            info(t("msg.eliminado.exito", "Eliminado con Éxito"));
             return true;
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, "Fallo al eliminar el contacto en índice: " + indice, ex);
             error(t("msg.error.eliminar", "Error al eliminar el contacto"));
             return false;
         }
+    }
+
+    // Método para LIMPIAR el formulario y disparar su notificación
+    public void limpiarFormulario() {
+        new NotificacionControlador(this.delegado, "msg.notificacion.limpiado", "Formulario limpiado con éxito").start();
     }
 }
