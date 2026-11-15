@@ -38,6 +38,7 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 	private VerificacionControlador verificacion;
 	private BusquedaControlador busqueda;
 	private ExportacionControlador  exportacion;
+	private NotificacionControlador notificacion;
 	private String categoria = "";
 	private boolean favorito = false;
 
@@ -89,15 +90,19 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 		delegado.chb_favorito.addItemListener(this);
 		delegado.lst_contactos.getSelectionModel().addListSelectionListener(this);
 		DocumentListener filtro = new DocumentListener() {
-			public void insertUpdate(DocumentEvent e) { filtrar(); }
-			public void removeUpdate(DocumentEvent e) { filtrar(); }
-			public void changedUpdate(DocumentEvent e) { filtrar(); }
-			private void filtrar() {
-				BusquedaControlador busqueda = new BusquedaControlador(delegado, contactos.getContactos(), tabla, delegado.txt_buscar.getText());
-				busqueda.execute();
-			}
+			public void insertUpdate(DocumentEvent e) { filtrarBusqueda(); }
+			public void removeUpdate(DocumentEvent e) { filtrarBusqueda(); }
+			public void changedUpdate(DocumentEvent e) { filtrarBusqueda(); }
 		};
 		delegado.txt_buscar.getDocument().addDocumentListener(filtro);
+	}
+
+	private void filtrarBusqueda() {
+		if (busqueda != null && !busqueda.isDone()) {
+			busqueda.cancel(true);
+		}
+		busqueda = new BusquedaControlador(delegado, contactos.getContactos(), tabla, delegado.txt_buscar.getText());
+		busqueda.execute();
 	}
 
 	private String t(String clave, String respaldo) {
@@ -195,10 +200,27 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 	}
 
 	private void refrescar() {
-		tabla.cargar(contactos.getContactos());
+		actualizarProgresoRapido();
+		if (!delegado.txt_buscar.getText().isBlank()) {
+			filtrarBusqueda();
+		} else {
+			tabla.cargar(contactos.getContactos());
+		}
 		actualizarEstadoAcciones();
 		mostrarReporte();
 		guardarReporte();
+	}
+
+	private void actualizarProgresoRapido() {
+		int total = contactos.getContactos().size();
+		delegado.barra.setMaximum(total);
+		delegado.barra.setValue(total);
+		Locale locale = delegado.getBundle() != null ? delegado.getBundle().getLocale() : Locale.getDefault();
+		if (total == 0) {
+			delegado.barra.setString(t("progress.vacio", "No hay contactos para cargar"));
+		} else {
+			delegado.barra.setString(String.format(locale, t("progress.formato", "%d/%d contactos - %d ms"), total, total, 0));
+		}
 	}
 
 	private void limpiarCampos() {
@@ -260,7 +282,7 @@ public class LogicaVentana implements ActionListener, ListSelectionListener, Ite
 			destino = new File(destino.getAbsolutePath() + ".csv");
 		}
 		new ExportacionControlador(delegado, contactos.getContactos(), destino).execute();
-    }
+	}
 
 	private void exportarReporte() {
 		String contenido = reporte.generar(contactos.getContactos());

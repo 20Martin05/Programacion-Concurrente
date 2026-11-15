@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.util.List;
 
 import javax.swing.JTable;
-import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -12,7 +11,7 @@ import javax.swing.table.TableRowSorter;
 import modelo.Persona;
 import vista.ventana;
 
-// Gestiona el modelo, las columnas, los anchos, la ordenación y el filtro de la tabla de contactos.
+// Gestiona el modelo, las columnas, los anchos, la ordenación y el renderizado de la tabla de contactos.
 public class TablaContactos {
     private static final int[] ANCHOS = {50, 160, 100, 180, 110, 80};
     private static final int[] MAXIMOS = {70, -1, -1, -1, -1, 90};
