@@ -101,7 +101,6 @@ public class ReporteEstadisticas {
         return t("cat.otros", "Otros");
     }
 
-    // Escribe el reporte en src/main/resources/files (o data/files si no existe el proyecto).
     public void guardar(String contenido) throws IOException {
         Path ruta = Paths.get("src", "main", "resources", "files", "reporte_estadisticas.txt");
         if (!Files.isDirectory(ruta.getParent())) {
