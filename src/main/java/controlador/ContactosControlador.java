@@ -72,6 +72,7 @@ public class ContactosControlador {
         try {
             new PersonaDAO(persona).escribirArchivo();
             contactos.add(persona);
+            new NotificacionControlador(this.delegado, "msg.notificacion.guardado", "Contacto guardado con éxito").start();
             info(t("msg.contacto.registrado", "Contacto Registrado!!!"));
             return true;
         } catch (IOException ex) {
@@ -88,6 +89,7 @@ public class ContactosControlador {
             int id = contactos.get(indice).getId();
             contactos.set(indice, new Persona(id, nombres, telefono, email, categoria, favorito));
             new PersonaDAO(new Persona()).actualizarContactos(contactos);
+            new NotificacionControlador(this.delegado, "msg.notificacion.modificado", "Contacto modificado con éxito").start();
             info(t("msg.modificado.exito", "Modificado con Éxito"));
             return true;
         } catch (Exception ex) {
@@ -102,6 +104,7 @@ public class ContactosControlador {
         try {
             contactos.remove(indice);
             new PersonaDAO(new Persona()).actualizarContactos(contactos);
+            new NotificacionControlador(this.delegado, "msg.notificacion.eliminado", "Contacto eliminado con éxito").start();
             info(t("msg.eliminado.exito", "Eliminado con Éxito"));
             return true;
         } catch (Exception ex) {

@@ -22,34 +22,23 @@ public class ExportacionControlador extends SwingWorker<Void, Void> {
         this.archivo = archivo;
     }
 
-    private String t(String clave, String respaldo) {
-        var bundle = delegado.getBundle();
-        return bundle != null ? bundle.getString(clave) : respaldo;
-    }
-
     @Override
     protected Void doInBackground() throws Exception {
         PersonaDAO persona = new PersonaDAO(new Persona());
         persona.exportarCSV(archivo, contactos);
-        return  null;
+        return null;
     }
 
     @Override
     protected void done() {
         try {
             get();
-            JOptionPane.showMessageDialog(delegado,
-                    t("msg.exportado.exito", "Exportado exitosamente en:\n") + archivo.getAbsolutePath());
+            new NotificacionControlador(this.delegado, "msg.notificacion.exportado", "Exportación completada con éxito").start();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            JOptionPane.showMessageDialog(delegado,
-                    t("msg.exportado.interrumpir", "Exportación interrumpida: ") + archivo.getAbsolutePath(),
-                    t("dialog.error.titulo", "Error"), JOptionPane.ERROR_MESSAGE);
+            new NotificacionControlador(this.delegado, "msg.notificacion.exportado.interrumpido", "Exportación interrumpida", true).start();
         } catch (ExecutionException e) {
-            String causa = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
-            JOptionPane.showMessageDialog(delegado,
-                    t("msg.error.exportar", "Error al exportar archivo: ") + causa,
-                    t("dialog.error.titulo", "Error"), JOptionPane.ERROR_MESSAGE);
+            new NotificacionControlador(this.delegado, "msg.notificacion.exportado.error", "Error al exportar archivo", true).start();
         }
     }
 }

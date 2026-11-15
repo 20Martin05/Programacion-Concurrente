@@ -22,6 +22,11 @@ public class VerificacionControlador extends Thread {
         this.alFinalizarExito = alFinalizarExito;
     }
 
+    private String t(String clave, String respaldo) {
+        var bundle = delegado.getBundle();
+        return bundle != null ? bundle.getString(clave) : respaldo;
+    }
+
     @Override
     public void run() {
         final String[] datos = new String[5];
@@ -45,8 +50,10 @@ public class VerificacionControlador extends Thread {
         SwingUtilities.invokeLater(() -> {
             try {
                 if (duplicado) {
-                    JOptionPane.showMessageDialog(delegado, "El contacto ya se encuentra registrado.",
-                            "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(delegado,
+                            t("msg.contacto.duplicado", "El contacto ya se encuentra registrado."),
+                            t("dialog.advertencia.titulo", "Advertencia"),
+                            JOptionPane.WARNING_MESSAGE);
                 } else {
                     boolean guardado = controlador.agregar(
                             datos[0], datos[1], datos[2], datos[3], Boolean.parseBoolean(datos[4])
