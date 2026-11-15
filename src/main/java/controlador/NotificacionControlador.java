@@ -54,6 +54,8 @@ public class NotificacionControlador extends Thread {
                 delegado.lbl_notificacion_real.setText(mensaje);
                 delegado.panelContactos.revalidate();
                 delegado.panelContactos.repaint();
+                delegado.panelEstadisticas.revalidate();
+                delegado.panelEstadisticas.repaint();
             } catch (Exception e) {
                 // Ignore silent UI error
             }
